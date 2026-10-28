@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 
 export type Review = { name: string; quote: string; source?: string };
 
@@ -14,6 +14,7 @@ const useMedia = (query: string) => {
   useEffect(() => {
     const mq = window.matchMedia(query);
     const on = () => setMatch(mq.matches);
+    on();
     mq.addEventListener("change", on);
     return () => mq.removeEventListener("change", on);
   }, [query]);
@@ -59,7 +60,7 @@ export const SnapReviews = ({ reviews, pageSizeDesktop = 4, pageSizeMobile = 2, 
   const pageSize = isDesktop ? pageSizeDesktop : pageSizeMobile;
   const pageCount = Math.ceil(reviews.length / pageSize);
   const [page, setPage] = useState(0);
-  const [openName, setOpenName] = useState<string | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef({ down: false, x: 0, left: 0, moved: 0 });
 
@@ -77,17 +78,17 @@ export const SnapReviews = ({ reviews, pageSizeDesktop = 4, pageSizeMobile = 2, 
   const goPage = (i: number) => {
     const target = trackRef.current?.children[i * pageSize] as HTMLElement | undefined;
     target?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-    setOpenName(null);
+    setOpenIndex(null);
   };
 
   // Mouse drag (touch already scrolls natively).
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     const el = trackRef.current;
     if (!el || e.pointerType !== "mouse") return;
     drag.current = { down: true, x: e.clientX, left: el.scrollLeft, moved: 0 };
     el.style.scrollSnapType = "none";
   };
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
     const el = trackRef.current;
     const d = drag.current;
     if (!el || !d.down) return;
@@ -102,7 +103,7 @@ export const SnapReviews = ({ reviews, pageSizeDesktop = 4, pageSizeMobile = 2, 
     requestAnimationFrame(() => { el.style.scrollSnapType = ""; });
   };
   // A drag must never open a card.
-  const onClickCapture = (e: React.MouseEvent) => {
+  const onClickCapture = (e: MouseEvent) => {
     if (drag.current.moved > 6) { e.preventDefault(); e.stopPropagation(); drag.current.moved = 0; }
   };
 
@@ -121,8 +122,8 @@ export const SnapReviews = ({ reviews, pageSizeDesktop = 4, pageSizeMobile = 2, 
         onPointerCancel={endDrag}
         onClickCapture={onClickCapture}
       >
-        {reviews.map((r) => (
-          <ReviewCard key={r.name} review={r} open={openName === r.name} onToggle={() => setOpenName(openName === r.name ? null : r.name)} />
+        {reviews.map((r, i) => (
+          <ReviewCard key={i} review={r} open={openIndex === i} onToggle={() => setOpenIndex(openIndex === i ? null : i)} />
         ))}
       </div>
       {pageCount > 1 && (

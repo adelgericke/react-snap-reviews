@@ -62,6 +62,10 @@
 @media (max-width: 767px) {
   .snap-reviews { --gap: 10px; --lines: 8; }
   .snap-reviews-track { margin-right: -16px; }
-  .snap-review { padding: 20px 16px; gap: 10px; flex-basis: calc((100% - 16px - var(--gap)) / 2); }
+  .snap-review {
+    padding: 20px 16px;
+    gap: 10px;
+    flex-basis: calc((100% - 16px - (var(--per-page) - 1) * var(--gap)) / var(--per-page));
+  }
   .snap-review blockquote { font-size: 15px; }
 }

@@ -27,6 +27,8 @@ Testimonials are some of your strongest proof, but most carousels hide them badl
 
 ## Usage
 
+Copy `src/SnapReviews.tsx` and `src/snap-reviews.css` into your project.
+
 ```tsx
 import { SnapReviews } from "./SnapReviews";
 import "./snap-reviews.css";
@@ -38,6 +40,15 @@ const reviews = [
 
 <SnapReviews reviews={reviews} pageSizeDesktop={4} pageSizeMobile={2} />
 ```
+
+### Props
+
+| Prop | Default | What it does |
+|---|---|---|
+| `reviews` | — | Array of `{ name, quote, source? }`. |
+| `pageSizeDesktop` | `4` | Cards visible per screen on desktop. |
+| `pageSizeMobile` | `2` | Cards visible per screen on mobile (the next card still peeks in). |
+| `desktopQuery` | `"(min-width: 768px)"` | Media query that switches to desktop sizing. Keep it in sync with the breakpoint in the CSS. |
 
 ## Files
 
